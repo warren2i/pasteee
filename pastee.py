@@ -77,16 +77,18 @@ def paste ( contents, name ):  ## make a new paste
         print('slowing down, we hit a wall')
         time.sleep(5)
 #for x in range(30):
-#    paste('name','contents')
-
+paste('name','contents')
+#paste('nik','hdhfhfhf')
 
 
 def showpastes ():  ## returns json data array of pastes linked to api key
     headers = {'X-Auth-Token': apikey}
     showpastes = requests.get(url = 'https://api.paste.ee/v1/pastes/', headers = headers)
     print(showpastes.json())
+    print(showpastes.json())
     for x in enumerate(showpastes.json()['data']):
-        print(x)
+        pass
+        #print(x)
     return showpastes.json()
 
 
@@ -116,14 +118,8 @@ def deleteallpastes():
         deletepaste(id)
         pass
 
-deleteallpastes()
-deleteallpastes()
-deleteallpastes()
-deleteallpastes()
-deleteallpastes()
-deleteallpastes()
-deleteallpastes()
-deleteallpastes()
+#deleteallpastes()
+
 
 
 
