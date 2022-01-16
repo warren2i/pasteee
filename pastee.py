@@ -1,7 +1,8 @@
-import requests
 from os.path import exists
-import json
-import time
+
+import requests
+
+apikey = '****'
 
 def configparser ():  ## checks if first launch, creates config file, asks for api key saves to file and in future loads from this
     file_exists = exists('config.cfg')
@@ -23,103 +24,162 @@ def configparser ():  ## checks if first launch, creates config file, asks for a
         firstlaunch = False
     return firstlaunch, apikey
 
-firstlaunch, apikey = configparser()
-
 def statuscheck(status):
     status = status.status_code
     if status == 200:
         statusflag = True
-        statusmessage =  'success'
+        statusmessage = 'success'
     if status == 201:
         statusflag = True
         statusmessage = 'Paste was a success'
     if status == 400:
         statusflag = False
-        statusmessage =  'Bad Request – Your request sucks'
+        statusmessage = 'Bad Request – Your request sucks'
     if status == 401:
         statusflag = False
-        statusmessage =  'Unauthorized – Your Application/User application key is wrong.'
+        statusmessage = 'Unauthorized – Your Application/User application key is wrong.'
     if status == 403:
         statusflag = False
-        statusmessage =  'Forbidden – The application is a standard Application, and the resource requires a UserApplication.'
+        statusmessage = \
+            'Forbidden – The application is a standard Application, and the resource requires a UserApplication.'
     if status == 404:
         statusflag = False
-        statusmessage =  'Not Found – The specified resource could not be found.'
+        statusmessage = 'Not Found – The specified resource could not be found.'
     if status == 405:
         statusflag = False
-        statusmessage =  'Method Not Allowed – You tried to access an endpoint with an invalid method.'
+        statusmessage = 'Method Not Allowed – You tried to access an EndPoint with an invalid method.'
     if status == 406:
         statusflag = False
-        statusmessage =  'Not Acceptable – You requested a format that isn’t json or xml.'
+        statusmessage = 'Not Acceptable – You requested a format that isn’t json or xml.'
     if status == 429:
         statusflag = False
-        statusmessage =  'Too Many Requests – You’re submitting pastes too fast, slow down and try again later.'
+        statusmessage = 'Too Many Requests – You’re submitting pastes too fast, slow down and try again later.'
     if status == 500:
         statusflag = False
-        statusmessage =  'Internal Server Error – Paste.ee had a problem with our server. Try again later.'
+        statusmessage = 'Internal Server Error – Paste.ee had a problem with our server. Try again later.'
     if status == 503:
         statusflag = False
-        statusmessage =  'Service Unavailable – Paste.ee is temporarially offline for maintanance. Please try again later.'
-    print('Request status = '+statusmessage)
+        statusmessage = \
+            'Service Unavailable – Paste.ee is temporarially offline for maintanance. Please try again later.'
+    print('Request status = ' + statusmessage)
     return statusflag, statusmessage
 
 
+class EndPoint:
+    pastes = 'https://api.paste.ee/v1/pastes'
+    file = 'https://api.paste.ee/v1/pastes/file'
+    syntaxes = 'https://api.paste.ee/v1/syntaxes/'
+    users = 'https://api.paste.ee/v1/users/info'
+    userauth = 'https://paste.ee/account/api/authorize/'
+    pass
 
-def paste ( contents, name ):  ## make a new paste
-    payload = {"description": name, "sections": [{"name": "Section1", "syntax": "autodetect", "contents": contents}]}
+
+class GetPaste(object):
+    def __init__(self, _id):
+        self._id = _id
+        headers = {'X-Auth-Token': apikey}
+        url = 'https://api.paste.ee/v1/pastes/' + _id
+        self.get = requests.get(url = url, headers = headers)
+        self.status = statuscheck(self.get)[0]
+        if self.status is True:
+            self.name = self.get.json()['paste']['description']
+            self.data = self.get.json()['paste']
+            self.created_at = self.get.json()['paste']['created_at']
+            self.content = self.get.json()['paste']['sections'][0]['contents']
+            self.size = self.get.json()['paste']['sections'][0]['size']
+        else:
+            self.name = None
+            self.data = None
+            self.created_at = None
+            self.content = None
+            self.size = None
+
+
+def showallpastes():
     headers = {'X-Auth-Token': apikey}
-    post_response = requests.post(url = 'https://api.paste.ee/v1/pastes', json = payload, headers = headers)
-    print(statuscheck(post_response)) ## returns the status of the request
-    if statuscheck(post_response)[0] is True:
-        print(post_response.text)
-        time.sleep(0.5)
+    url = 'https://api.paste.ee/v1/pastes/?perpage=5000'
+    get = requests.get(url = url, headers = headers)
+    for x in enumerate(get.json()['data']):
+        print(x)
+    return get.json()['data']
+
+
+# showallpastes()
+
+def make(name, contents):
+    payload = {"description": name, "sections": [{"name": name, "syntax": "autodetect", "contents": contents}]}
+    headers = {'X-Auth-Token': apikey, 'Content-Type': 'application/json'}
+    post_response = requests.post(url = EndPoint.pastes, json = payload, headers = headers)
+    status = statuscheck(post_response)[0]
+    if status is True:
+        pasteid = post_response.json()['id']
     else:
-        print('slowing down, we hit a wall')
-        time.sleep(5)
-#for x in range(30):
-paste('name','contents')
-#paste('nik','hdhfhfhf')
-
-
-def showpastes ():  ## returns json data array of pastes linked to api key
-    headers = {'X-Auth-Token': apikey}
-    showpastes = requests.get(url = 'https://api.paste.ee/v1/pastes/', headers = headers)
-    print(showpastes.json())
-    print(showpastes.json())
-    for x in enumerate(showpastes.json()['data']):
+        pasteid = None
         pass
-        #print(x)
-    return showpastes.json()
+    return status, pasteid
 
 
-showpastes()
+# paste1 = make('paste','paste') #makes a new paste
+# print(paste1) # returns status,pasteid
 
-def getpaste ( id ):  ## returns data as json for paste
+
+def users():
     headers = {'X-Auth-Token': apikey}
-    url = 'https://api.paste.ee/v1/pastes/' + id
-    getpaste = requests.get(url = url, headers = headers)
-    if statuscheck(getpaste)[0] is True:
-        print(getpaste.json())
-    else: pass
-#getpaste('LzEcl')
+    post_response = requests.get(url = EndPoint.users, headers = headers)
+    status = statuscheck(post_response)[0]
+    data = (post_response.json())
+    return status, data
 
-def deletepaste( id ):
+
+# user = users() # This EndPoint will return information about the current api key.
+# print(user) # returns status, data
+
+def getsyntax(_id):  # looks like the paste.ee doesnt support this documented function right now...
     headers = {'X-Auth-Token': apikey}
-    url = 'https://api.paste.ee/v1/pastes/' + id
-    deletepaste = requests.delete(url = url, headers = headers)
-    print(deletepaste.json())
+    post_response = requests.get(url = EndPoint.syntaxes + _id, headers = headers)
+    # print(EndPoint.syntaxes+_id)
+    status = statuscheck(post_response)[0]
+    data = (post_response.json())
+    return status, data
 
-#deletepaste('TGPAw')
+
+# getsyntax('CRgNw')
+
+def file(name, filename):
+    if exists(filename) is True:
+        f = open(filename, "r")
+    else:
+        print('file could not be found')
+        return False, None
+    contents = f.read()
+    payload = {"description": name, "sections": [{"name": name, "syntax": "autodetect", "contents": contents}]}
+    headers = {'X-Auth-Token': apikey}
+    post_response = requests.post(url = EndPoint.pastes, json = payload, headers = headers)
+    status = statuscheck(post_response)[0]
+    if status is True:
+        pasteid = post_response.json()['id']
+    else:
+        pasteid = None
+        pass
+    return status, pasteid
+
+
+# file = file('name','fle.ps1')
+# print(file)
+
+
+def deletepaste(_id):
+    headers = {'X-Auth-Token': apikey}
+    url = 'https://api.paste.ee/v1/pastes/' + _id
+    delete = requests.delete(url = url, headers = headers)
+    status = statuscheck(deletepaste)[0]
+    if status is True:
+        data = delete.json()
+    else:
+        data = None
+        pass
+    return status, data
+
 
 def deleteallpastes():
-    temparr=showpastes()['data']
-    for x in enumerate(temparr): ## calls showpastes function, enumeate list, extract id and pass to delete paste function
-        id=(x[1]['id'])
-        deletepaste(id)
-        pass
-
-#deleteallpastes()
-
-
-
-
+    pass
