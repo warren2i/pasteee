@@ -11,17 +11,17 @@
                                                      
 
 ````
-###Pastee a python libary to interface existing scripts with Paste.ee (Paste.ee is a FREE Pastebin with SSL, IPv6)
+### Pastee a python libary to interface existing scripts with Paste.ee (Paste.ee is a FREE Pastebin with SSL, IPv6)
 ****
-##Usage
+## Usage
 
-###import pasteee
+### Import pasteee
 
-####Define api key 
+#### Define api key 
 
 `pasteee.apikey = '<apikey>'`
 
-####Get a single paste object
+#### Get a single paste object
 
 `paste1 = pasteee.GetPaste(<id>)`
 
