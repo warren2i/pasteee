@@ -55,7 +55,9 @@
 
 #### Show all pastes
 
-`showallpastes()` returns all pasts as json object
+`showall = showallpastes()` returns all pasts as json object
+
+`print(showall.data)`
 
 enumerate example
 ```
