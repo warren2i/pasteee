@@ -2,7 +2,7 @@ from os.path import exists
 
 import requests
 
-apikey = 'u38yy4u89g7itIed4WWcKOxCPQxqB15PCPwdZ3fqT'
+apikey = '<apikey>'
 
 
 def statuscheck(status):
