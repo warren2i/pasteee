@@ -2,27 +2,8 @@ from os.path import exists
 
 import requests
 
-apikey = '****'
+apikey = 'u38yy4u89g7itIed4WWcKOxCPQxqB15PCPwdZ3fqT'
 
-def configparser ():  ## checks if first launch, creates config file, asks for api key saves to file and in future loads from this
-    file_exists = exists('config.cfg')
-    if file_exists is False:  ## if config file doesnt exist create one.
-        open('config.cfg', 'xt')
-        print('Config file does not exist')
-        print('creating config file')
-        print('please enter paste.ee api key')
-        f = open("config.cfg", "a")
-        apikey = input()
-        print(apikey)
-        f.write('apikey:' + apikey)
-        f.close()
-        firstlaunch = True
-    else:
-        f = open("config.cfg", "r")
-        apikey = f.read().strip('apikey:')
-        # print(apikey)
-        firstlaunch = False
-    return firstlaunch, apikey
 
 def statuscheck(status):
     status = status.status_code
@@ -101,10 +82,9 @@ def showallpastes():
     get = requests.get(url = url, headers = headers)
     for x in enumerate(get.json()['data']):
         print(x)
+        pass
     return get.json()['data']
 
-
-# showallpastes()
 
 def make(name, contents):
     payload = {"description": name, "sections": [{"name": name, "syntax": "autodetect", "contents": contents}]}
@@ -119,10 +99,6 @@ def make(name, contents):
     return status, pasteid
 
 
-# paste1 = make('paste','paste') #makes a new paste
-# print(paste1) # returns status,pasteid
-
-
 def users():
     headers = {'X-Auth-Token': apikey}
     post_response = requests.get(url = EndPoint.users, headers = headers)
@@ -130,9 +106,6 @@ def users():
     data = (post_response.json())
     return status, data
 
-
-# user = users() # This EndPoint will return information about the current api key.
-# print(user) # returns status, data
 
 def getsyntax(_id):  # looks like the paste.ee doesnt support this documented function right now...
     headers = {'X-Auth-Token': apikey}
@@ -142,8 +115,6 @@ def getsyntax(_id):  # looks like the paste.ee doesnt support this documented fu
     data = (post_response.json())
     return status, data
 
-
-# getsyntax('CRgNw')
 
 def file(name, filename):
     if exists(filename) is True:
@@ -164,15 +135,11 @@ def file(name, filename):
     return status, pasteid
 
 
-# file = file('name','fle.ps1')
-# print(file)
-
-
 def deletepaste(_id):
     headers = {'X-Auth-Token': apikey}
     url = 'https://api.paste.ee/v1/pastes/' + _id
     delete = requests.delete(url = url, headers = headers)
-    status = statuscheck(deletepaste)[0]
+    status = statuscheck(delete)[0]
     if status is True:
         data = delete.json()
     else:
@@ -182,4 +149,8 @@ def deletepaste(_id):
 
 
 def deleteallpastes():
-    pass
+    getall = showallpastes()
+    for x, val in (enumerate(getall)):
+        _id = (getall[x]['id'])
+        print(_id)
+        deletepaste(_id)
