@@ -93,7 +93,7 @@
 
 `showall = pasteee.ShowAllPastes()` returns all pastes as json
 
-`showall.data` Returns all pastes as json
+`showall.data' Returns all pastes as json
 
 
 enumerate example
@@ -106,7 +106,7 @@ for x in enumerate(getall['data']):
 
 #### Get paste syntax
 
-`getsyntax(<id>)` looks like the paste.ee doesnt support this documented function right now
+`getsyntax('<id>')` looks like the paste.ee doesnt support this documented function right now
 
 #### Users
 
