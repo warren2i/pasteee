@@ -2,9 +2,20 @@ import pasteee
 
 pasteee.apikey = '<apikey>'
 
+print('----------------------')
+print('----------------------')
+makepaste = pasteee.Make('name', 'contents', 86400)
+print(makepaste.status) # prints bool value of status
+print(makepaste.name) # prints paste name
+print(makepaste.content) # prints paste content
+print(makepaste.syntax) # prints paste syntax
+print(makepaste.expiration) # prints paste expiration in datetime format
+print(makepaste.paste_id) # prints pasteid
+print(makepaste.expiration_time) # prints expiration_time in date time format
+print('----------------------')
 
 print('----------------------')
-paste1 = pasteee.GetPaste('hf4tz') # creates GetPaste object
+paste1 = pasteee.GetPaste('jLVES') # creates GetPaste object
 print(('Name:-           ')+(paste1.name)) #prints paste name
 print(('expires_at:-     ')+(paste1.expires_at)) #prints expires_at datetime
 print(('syntax:-         ')+(paste1.syntax)) # prints paste syntax
@@ -21,17 +32,6 @@ print('----------------------')
 print('showallpastes test')
 showall = pasteee.ShowAllPastes() # returns all pastes as json
 print(showall.data) # print all pastes as json
-print('----------------------')
-
-print('----------------------')
-makepaste = pasteee.Make('name', 'contents', 86400)
-print(makepaste.status) # prints bool value of status
-print(makepaste.name) # prints paste name
-print(makepaste.content) # prints paste content
-print(makepaste.syntax) # prints paste syntax
-print(makepaste.expiration) # prints paste expiration in datetime format
-print(makepaste.paste_id) # prints pasteid
-print(makepaste.expiration_time) # prints expiration_time in date time format
 print('----------------------')
 
 print('----------------------')

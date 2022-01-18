@@ -1,9 +1,8 @@
 from os.path import exists
 from datetime import datetime
-
 import requests
 
-apikey = '<apikey>'
+apikey = '<api-key>'
 
 
 class StatusCheck:
@@ -45,6 +44,10 @@ class StatusCheck:
             statusflag = False
             statusmessage = \
                 'Service Unavailable – Paste.ee is temporarially offline for maintanance. Please try again later.'
+        else:
+            statusflag = False
+            statusmessage = 'Couldnt return'
+
         self.statusflag = statusflag
         self.statusmessage = statusmessage
 
@@ -185,5 +188,3 @@ class Deleteallpastes:
         for x, val in (enumerate(getall)):
             _id = (getall[x]['id'])
             Deletepaste(_id)
-
-# deleteallpastes()
