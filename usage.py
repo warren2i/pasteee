@@ -1,4 +1,4 @@
-import pasteee
+from code import pasteee
 
 pasteee.apikey = '<apikey>'
 
@@ -41,7 +41,7 @@ print(user.data) # prints information about a pastes syntax.
 print('----------------------')
 
 print('----------------------')
-file = pasteee.File('name','text.txt')
+file = pasteee.File('name', 'text.txt')
 print(file.status) # prints bool value of file upload
 print(file.pasteid) # prints paste id
 print(file.name) # prints paste name
