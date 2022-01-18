@@ -1,11 +1,12 @@
 from os.path import exists
+from datetime import datetime
 
 import requests
 
-apikey = 'u38yy4u89g7itIed4WWcKOxCPQxqB15PCPwdZ3fqT'
+apikey = '<apikey>'
 
 
-class statuscheck():
+class StatusCheck:
     def __init__(self, status):
         self.status = status
         status = status.status_code
@@ -44,10 +45,8 @@ class statuscheck():
             statusflag = False
             statusmessage = \
                 'Service Unavailable – Paste.ee is temporarially offline for maintanance. Please try again later.'
-        print('Request status = ' + statusmessage)
         self.statusflag = statusflag
         self.statusmessage = statusmessage
-        #return statusflag, statusmessage
 
 
 class EndPoint:
@@ -67,7 +66,7 @@ class GetPaste(object):
         headers = {'X-Auth-Token': apikey}
         url = 'https://api.paste.ee/v1/pastes/' + _id
         self.get = requests.get(url = url, headers = headers)
-        self.status = statuscheck(self.get).statusflag
+        self.status = StatusCheck(self.get).statusflag
         if self.status is True:
             self.encrypted = self.get.json()['paste']['encrypted']
             self.views = self.get.json()['paste']['views']
@@ -89,93 +88,70 @@ class GetPaste(object):
             self.syntax = None
             self.size = None
 
-#paste = GetPaste('hf4tz')
-#print(paste.encrypted)
-#print(paste.views)
-#print(paste.expires_at)
-#print(paste.name)
-#print(paste.data)
-#print(paste.created_at)
-#print(paste.content)
-#print(paste.syntax)
-#print(paste.size)
 
-class showallpastes():
+class ShowAllPastes:
     def __init__(self):
+        _id = []
         headers = {'X-Auth-Token': apikey}
         url = 'https://api.paste.ee/v1/pastes/?perpage=5000'
         get = requests.get(url = url, headers = headers)
-        print(get)
-        for x in enumerate(get.json()['data']):
-            print(x)
-            pass
         self.data = get.json()['data']
+        self.total = get.json()['total']
 
-#showall = showallpastes()
-#print(showall.data)
 
-class make():
-    def __init__(self, name, contents):
+class Make:
+    def __init__(self, name, contents, expiration):
         self.name = name
         self.content = contents
-        payload = {"description": name, "sections": [{"name": name, "syntax": "autodetect", "contents": contents}]}
+        self.syntax = 'autodetect'
+        self.expiration = expiration
+        payload = {"description": name, "expiration": expiration,
+                   "sections": [{"name": name, "syntax": self.syntax, "contents": contents}]}
         headers = {'X-Auth-Token': apikey, 'Content-Type': 'application/json'}
         post_response = requests.post(url = EndPoint.pastes, json = payload, headers = headers)
-        status = statuscheck(post_response).statusflag
-        print(status)
+        status = StatusCheck(post_response).statusflag
         if status is True:
-            pasteid = post_response.json()['id']
+            paste_id = post_response.json()['id']
         else:
-            pasteid = None
+            paste_id = None
             pass
         self.status = status
-        self.pasteid = pasteid
+        self.paste_id = paste_id
+        self.expiration_time = datetime.fromtimestamp(expiration + datetime.now().timestamp())
 
-#make = make('name','contents')
-#print(make.status)
-#print(make.pasteid)
 
-class users():
+class Users:
     def __init__(self):
         headers = {'X-Auth-Token': apikey}
         post_response = requests.get(url = EndPoint.users, headers = headers)
-        status = statuscheck(post_response).statusflag
+        status = StatusCheck(post_response).statusflag
         data = (post_response.json())
         self.status = status
         self.data = data
 
-#user = users()
-#print(user.status)
-#print(user.data)
 
-
-class getsyntax():  # looks like the paste.ee doesnt support this documented function right now...
-    def __init__(self,_id):
+class Getsyntax:  # looks like the paste.ee doesnt support this documented function right now...
+    def __init__(self, _id):
         headers = {'X-Auth-Token': apikey}
         post_response = requests.get(url = EndPoint.syntaxes + _id, headers = headers)
-        # print(EndPoint.syntaxes+_id)
-        status = statuscheck(post_response).statusflag
+        status = StatusCheck(post_response).statusflag
         data = (post_response.json())
         self.status = status
         self.data = data
-        #return status, data
-#getsyntax = getsyntax('EDlnQ')
-#print(getsyntax.status)
-#print(getsyntax.data)
 
-class file(object):
-    def __init__(self,name, filename):
+
+class File(object):
+    def __init__(self, name, filename):
         if exists(filename) is True:
             f = open(filename, "r")
         else:
-            print('file could not be found')
             self.status = None
             self.pasteid = None
         contents = f.read()
         payload = {"description": name, "sections": [{"name": name, "syntax": "autodetect", "contents": contents}]}
         headers = {'X-Auth-Token': apikey}
         post_response = requests.post(url = EndPoint.pastes, json = payload, headers = headers)
-        status = statuscheck(post_response).statusflag
+        status = StatusCheck(post_response).statusflag
         if status is True:
             pasteid = post_response.json()['id']
         else:
@@ -183,18 +159,16 @@ class file(object):
             pass
         self.status = status
         self.pasteid = pasteid
-
-#file = file('name','text.txt')
-#print(file.status)
-#print(file.pasteid)
+        self.name = name
+        self.filename = filename
 
 
-class deletepaste(object):
-    def __init__(self,_id):
+class Deletepaste(object):
+    def __init__(self, _id):
         headers = {'X-Auth-Token': apikey}
         url = 'https://api.paste.ee/v1/pastes/' + _id
         delete = requests.delete(url = url, headers = headers)
-        status = statuscheck(delete).statusflag
+        status = StatusCheck(delete).statusflag
         if status is True:
             data = delete.json()
         else:
@@ -202,18 +176,14 @@ class deletepaste(object):
             pass
         self.status = status
         self.data = data
-
-#delete = deletepaste('zb8ys')
-#print(delete.data)
-#print(delete.status)
+        self._id = _id
 
 
-class deleteallpastes():
+class Deleteallpastes:
     def __init__(self):
-        getall = showallpastes().data
+        getall = ShowAllPastes().data
         for x, val in (enumerate(getall)):
             _id = (getall[x]['id'])
-            #print(_id)
-            deletepaste(_id)
+            Deletepaste(_id)
 
-#deleteallpastes()
+# deleteallpastes()
