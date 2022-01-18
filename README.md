@@ -17,47 +17,84 @@
 
 ### Import pasteee
 
+`import pasteee`
+
 #### Define api key 
 
 `pasteee.apikey = '<apikey>'`
 
 #### Get a single paste object
 
-`paste1 = pasteee.GetPaste(<id>)`
+`paste1 = pasteee.GetPaste('<id>')`
 
-`paste1.name` returns name
+`paste1.name` Returns paste name
 
-`paste1.created_at` returns created_at
+`paste1.expires_at` Returns expires_at datetime
 
-`paste1.content` returns contents of the paste
+`paste1.syntax` prints Returns syntax
 
-`paste1.status` returns bool value of the request
+`paste1.created_at` Returns created at datetime 
 
-`paste1.size` returns size of contents in bytes
+`paste1.content` Returns paste content
 
-`paste1.data` returns json data array of paste
+`paste1.views` Returns number of paste views
+
+`paste1.status` Returns bool status value
+
+`paste1.encrypted` is data encrypted? bool
+
+`paste1.size` Returns size of data
+
+`paste1.data` Returns data
+
 
 ##### Make a paste
 
-`newpaste=pasteee.make(<name>, <contents>)` returns bool value of paste status & paste ID
+`makepaste = pasteee.Make('name', 'contents', 86400)` makepaste Make object
+
+`makepaste.status` Returns bool value of status
+
+`makepaste.name` Returns paste name
+
+`makepaste.content` Returns paste content
+
+`makepaste.syntax` Returns paste syntax
+
+`makepaste.expiration` Returns paste expiration in datetime format
+
+`makepaste.paste_id` Returns paste id
+
+`makepaste.expiration_time` Returns expiration_time in date time format
+
 
 ##### Paste a file
 
-`file = pasteee.file(<name>,<filename>)` returns bool value of paste status & paste ID
+`file = pasteee.File('name','text.txt')` Creates file object
+`file.status` Returns bool value of file upload
+`file.pasteid` Returns paste id
+`file.name` Returns paste name
+`file.filename` Returns filename
 
 ##### Delete a paste
 
-`deletepaste(<id>)` returns bool value of the request 
+`delete = pasteee.Deletepaste('<id>')` Creates delete object
+
+`delete.data)` Returns data that was deleted
+
+`delete.status)` Returns status of deletion
+
+`delete._id)` Returns deleted paste id
 
 #### Delete all pastes
 
-`deleteallpastes()` doesn't return any data
+`pasteee.Deleteallpastes()` # deletes all pastes
 
 #### Show all pastes
 
-`showall = showallpastes()` returns all pasts as json object
+`showall = pasteee.ShowAllPastes()` returns all pastes as json
 
-`print(showall.data)`
+`showall.data` Returns all pastes as json
+
 
 enumerate example
 ```
