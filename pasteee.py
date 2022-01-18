@@ -188,3 +188,4 @@ class Deleteallpastes:
         for x, val in (enumerate(getall)):
             _id = (getall[x]['id'])
             Deletepaste(_id)
+
